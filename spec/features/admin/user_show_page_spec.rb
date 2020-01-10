@@ -12,7 +12,7 @@ RSpec.describe 'User Show Page' do
       visit '/admin/users'
 
       within "#user-#{@d_user.id}" do
-        click_link @d_user.name
+        click_link "#{@d_user.name}"
       end
 
       expect(current_path).to eq("/admin/users/#{@d_user.id}")
