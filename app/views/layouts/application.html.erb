@@ -72,6 +72,8 @@
     <% flash.each do |type, message| %>
     <p><%= message %></p>
     <% end %>
-    <%= yield %>
+    <div class="container" style="margin-top:50px">
+      <%= yield %>
+    </div>
   </body>
 </html>
