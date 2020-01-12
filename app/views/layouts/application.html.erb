@@ -37,15 +37,6 @@
         </ul>
         <ul class="navbar-nav ml-auto">
           <% if current_user %>
-            <li class="nav-item <%= is_active?(logout_path) %>">
-              <%= link_to 'Log Out', logout_path, class: "nav-link" %>
-            </li>
-            <li class="nav-item  <%= is_active?(profile_path) %>">
-              <%= link_to 'Profile', profile_path, class: "nav-link" %>
-            </li>
-            <li class="nav-item">
-              <p class="nav-link">Logged in as <%= current_user.name %></p>
-            </li>
             <% if current_merchant_user? %>
               <li class="nav-item <%= is_active?(merchant_dashboard_path) %>">
                 <%= link_to 'Merchant Dashboard', merchant_dashboard_path, class: "nav-link" %>
@@ -58,6 +49,15 @@
                 <%= link_to 'Users', '/admin/users', class: "nav-link" %>
               </li>
             <% end %>
+            <li class="nav-item  <%= is_active?(profile_path) %>">
+              <%= link_to 'Profile', profile_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <p class="nav-link">Logged in as <%= current_user.name %></p>
+            </li>
+            <li class="nav-item <%= is_active?(logout_path) %>">
+              <%= link_to 'Log Out', logout_path, class: "nav-link" %>
+            </li>
           <% else %>
             <li class="nav-item <%= is_active?(registration_path) %>">
               <%= link_to 'Register', registration_path, class: "nav-link" unless current_user %>
