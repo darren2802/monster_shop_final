@@ -41,16 +41,20 @@ RSpec.describe 'Merchant Dashboard' do
 
         within "#order-#{@order_2.id}" do
           expect(page).to have_link("#{@order_2.id}")
-          expect(page).to have_content("Potential Revenue: #{@order_2.merchant_subtotal(@merchant_1.id)}")
-          expect(page).to have_content("Quantity of Items: #{@order_2.merchant_quantity(@merchant_1.id)}")
-          expect(page).to have_content("Created: #{@order_2.created_at}")
+          within "#potential-revenue" do
+            expect(page).to have_content('$%.2f' % @order_2.merchant_subtotal(@merchant_1.id))
+          end
+          expect(page).to have_content(@order_2.merchant_quantity(@merchant_1.id))
+          expect(page).to have_content(@order_2.created_at)
         end
 
         within "#order-#{@order_3.id}" do
           expect(page).to have_link("#{@order_3.id}")
-          expect(page).to have_content("Potential Revenue: #{@order_3.merchant_subtotal(@merchant_1.id)}")
-          expect(page).to have_content("Quantity of Items: #{@order_3.merchant_quantity(@merchant_1.id)}")
-          expect(page).to have_content("Created: #{@order_3.created_at}")
+          within "#potential-revenue" do
+            expect(page).to have_content('$%.2f' % @order_3.merchant_subtotal(@merchant_1.id).round(2))
+          end
+          expect(page).to have_content(@order_3.merchant_quantity(@merchant_1.id))
+          expect(page).to have_content(@order_3.created_at)
         end
       end
     end

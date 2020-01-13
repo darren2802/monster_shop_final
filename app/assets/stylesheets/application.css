@@ -14,21 +14,25 @@
  *= require_self
  */
 
- .grid {
-    display: grid;
-    padding: 2em;
-    position: relative;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  }
+.grid {
+  display: grid;
+  padding: 2em;
+  position: relative;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
 
-  .grid_item {
-    background-color: WhiteSmoke;
-    padding: 1.5em;
-    color: Black;
-    border: 5px solid #fff;
-    width: 360px;
-  }
+.grid_item {
+  background-color: WhiteSmoke;
+  padding: 1.5em;
+  color: Black;
+  border: 5px solid #fff;
+  width: 360px;
+}
 
-  .grid_img {
-    width: 300px;
-  }
+.grid_img {
+  width: 300px;
+}
+
+.tab-space {
+  padding-left: 4em;
+}
