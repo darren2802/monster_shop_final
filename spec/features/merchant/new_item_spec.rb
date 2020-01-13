@@ -20,7 +20,7 @@ RSpec.describe 'New Merchant Item' do
     it 'I can create an  item for a merchant' do
       name = 'Ogre'
       description = "I'm an Ogre!"
-      price = 20
+      price = 2000
       image = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw'
       inventory = 5
 
@@ -36,7 +36,7 @@ RSpec.describe 'New Merchant Item' do
       expect(current_path).to eq("/merchant/items")
       expect(page).to have_link(name)
       expect(page).to have_content(description)
-      expect(page).to have_content("Price: #{number_to_currency(price)}")
+      expect(page).to have_content("Price: #{number_to_currency(price / 100)}")
       expect(page).to have_content("Active")
       expect(page).to have_content("Inventory: #{inventory}")
     end

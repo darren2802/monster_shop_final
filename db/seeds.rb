@@ -23,6 +23,7 @@ users = FactoryBot.create_list(:user, 50)
 
 counter = 0
 
+# add merchant users
 loop do
   user = users.sample
   if !user.merchant_employee?
@@ -31,6 +32,10 @@ loop do
   end
   break if counter == 15
 end
+
+# add admin user
+user = users.last
+user.update(merchant_id: nil, role: 2)
 
 counter = 0
 
