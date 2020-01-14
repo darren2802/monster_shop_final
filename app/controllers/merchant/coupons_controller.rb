@@ -29,9 +29,9 @@ class Merchant::CouponsController < Merchant::BaseController
     coupon.update(coupon_params)
 
     if coupon.save
-      flash.now[:success] = 'Coupon updated successfully'
+      flash[:success] = 'Coupon updated successfully'
     else
-      flash.now[:error] = 'Coupon not updated, please try again'
+      flash[:error] = 'Coupon not updated, please try again'
     end
 
     @coupons = current_user.merchant.coupons
@@ -43,9 +43,8 @@ class Merchant::CouponsController < Merchant::BaseController
     coupon = Coupon.find(params[:id])
     coupon.destroy
 
-    @coupons = current_user.merchant.coupons
-
     flash[:danger] = 'Coupon deleted'
+    @coupons = current_user.merchant.coupons
 
     redirect_back fallback_location: merchant_coupons_path
   end

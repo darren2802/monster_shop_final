@@ -6,7 +6,7 @@ class Order < ApplicationRecord
   enum status: ['pending', 'packaged', 'shipped', 'cancelled']
 
   def grand_total
-    order_items.sum('price * quantity')
+    order_items.sum('price / 100 * quantity')
   end
 
   def count_of_items
@@ -25,7 +25,7 @@ class Order < ApplicationRecord
     order_items
       .joins("JOIN items ON order_items.item_id = items.id")
       .where("items.merchant_id = #{merchant_id}")
-      .sum('order_items.price * order_items.quantity')
+      .sum('order_items.price / 100 * order_items.quantity')
   end
 
   def merchant_quantity(merchant_id)

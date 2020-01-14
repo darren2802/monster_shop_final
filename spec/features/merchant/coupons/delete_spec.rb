@@ -21,6 +21,7 @@ RSpec.describe 'Coupon Delete' do
 
     expect(current_path).to eq("/merchant/coupons")
     expect(page).to have_content('Coupon deleted')
+
     expect(page).to have_no_css("#coupon-#{@coupon.id}")
   end
 end

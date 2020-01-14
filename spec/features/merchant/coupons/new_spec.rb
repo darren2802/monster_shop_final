@@ -40,7 +40,7 @@ RSpec.describe 'Coupon Index Page' do
 
     click_link 'My Coupons'
 
-    within "#form-new-code" do
+    within "#form-new-coupon" do
       fill_in 'Code', with: @code
       fill_in 'Name', with: @name
       page.select '25%', from: 'discount'
