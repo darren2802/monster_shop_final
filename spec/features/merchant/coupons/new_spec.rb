@@ -50,4 +50,19 @@ RSpec.describe 'Coupon Index Page' do
     expect(current_path).to eq("/merchant/coupons")
     expect(page).to have_content('Coupon limit of 5 cannot be exceeded')
   end
+
+  it 'will not create a coupon if form is incomplete' do
+    visit '/merchant'
+
+    click_link 'My Coupons'
+
+    within "#form-new-code" do
+      fill_in 'Code', with: @code
+      page.select '25%', from: 'discount'
+      click_button 'Add Coupon'
+    end
+
+    expect(current_path).to eq("/merchant/coupons")
+    expect(page).to have_content('Coupon could not be added, please try again')
+  end
 end
