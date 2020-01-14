@@ -1,8 +1,8 @@
 <h3>My Cart</h3>
+<br>
 <% if cart.items.empty? %>
   <p>Your Cart is Empty!</p>
 <% else %>
-<h3>Items</h3>
 <table class="table">
   <th></th>
   <th>Name</th>
@@ -15,7 +15,7 @@
   <th>Discount</th>
   <th>Discounted<br>Subtoal</th>
   <th>Change<br>Qty</th>
-  <th>Remove</th>
+  <th></th>
   <% cart.items.each do |item| %>
     <tr id='item-<%= item.id%>'>
       <td><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw" class="cart_img"></td>
@@ -41,13 +41,29 @@
     <td><%= cart.count %></td>
     <td></td>
     <td><%= number_to_currency(cart.grand_total) %></td>
+    <td></td>
+    <td>[discount]</td>
+    <td>[discounted subtotal]</td>
+    <td colspan="2"></td>
+  </tr>
+  <tr>
+    <td colspan="5"></td>
+    <td colspan="2">Coupon Code:</td>
+    <td colspan="2">
+      <%= form_tag "/coupon" do %>
+        <%= text_field_tag :code, nil, class: "form-control form-control-sm" %>
+    </td>
+    <td colspan="2">
+        <%= submit_tag 'Apply Coupon', class: "btn btn-info btn-sm", method: :patch %>
+      <% end %>
+    </td>
+    <td colspan="2"></td>
   </tr>
 </table>
 
 <div class="btn-toolbar">
   <section id='checkout'>
       <% if current_user %>
-        <%= button_to 'Apply Coupon', '/coupons', class: "btn btn-success", method: :patch %>
         <%= button_to 'Check Out & Place Order', '/orders', class: "btn btn-success mx-4" %>
       <% else %>
         <p>You must <%= link_to 'register', registration_path %> or <%= link_to 'log in', login_path %> to checkout.</p>
