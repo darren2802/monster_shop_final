@@ -9,6 +9,7 @@
 OrderItem.destroy_all
 Order.destroy_all
 User.destroy_all
+Coupon.destroy_all
 Merchant.destroy_all
 Item.destroy_all
 
@@ -16,6 +17,7 @@ merchants = FactoryBot.create_list(:merchant, 15)
 items = []
 merchants.each do |merchant|
   items << FactoryBot.create_list(:item, 30, merchant: merchant)
+  merchant.coupons << FactoryBot.create_list(:coupon, 5, merchant: merchant)
 end
 items.flatten!
 

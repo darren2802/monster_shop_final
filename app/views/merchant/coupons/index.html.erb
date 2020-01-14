@@ -1,0 +1,46 @@
+<h4>Current</h4>
+<br>
+<table class="table">
+  <th>Code</th>
+  <th>Name</th>
+  <th>Discount</th>
+  <th></th>
+  <th></th>
+  <% @coupons.each do |coupon| %>
+    <tr id="coupon-<%= coupon.id %>">
+      <td><%= coupon.code %></td>
+      <td><%= coupon.name %></td>
+      <td><%= coupon.discount %>%</td>
+      <td><%= link_to 'Edit', "/merchant/coupons/#{coupon.id}/edit" %></td>
+      <td><%= link_to 'Delete', "/merchant/coupons/#{coupon.id}", method: :delete %></td>
+    </tr>
+  <% end %>
+</table>
+<br>
+<hr>
+<br>
+<h4>Add</h4>
+<br>
+<%= form_tag merchant_coupons_path, id: "form-new-code", class: "form-inline" do %>
+  <div class="form-group">
+    <%= label_tag :code %>
+    <div class="col-md-4">
+      <%= text_field_tag :code, nil, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= label_tag :name %>
+    <div class="col-md-4">
+      <%= text_field_tag :name, nil, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= label_tag :discount %>
+    <div class="col-md-4">
+      <%= select_tag :name, options_for_select([['5%',5],['10%',10],['25%',25],['50%',50],['75%',75],['100%',100]]), name: 'discount', class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-inline">
+    <%= submit_tag 'Add Coupon', class: "btn btn-primary" %>
+  </div>
+<% end %>

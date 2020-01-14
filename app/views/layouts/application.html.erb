@@ -32,7 +32,10 @@
             <%= link_to 'Items', '/items', class: "nav-link" %>
           </li>
           <li class="nav-item <%= is_active?('/cart') %>">
-            <%= link_to "Cart: #{cart.count}", cart_path, class: "nav-link" unless current_user && current_admin?%>
+            <%= link_to "Cart: #{cart.count}", cart_path, class: "nav-link" unless current_user && current_admin? %>
+          </li>
+          <li class="nav-item <%= is_active?('/merchant/coupons') %>">
+            <%= link_to "Coupons", merchant_coupons_path, class: "nav-link" if current_user && current_merchant_user? %>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
