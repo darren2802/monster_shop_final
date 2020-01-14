@@ -41,6 +41,10 @@ class Cart
     @contents['items'][item_id.to_s] * Item.find(item_id).price / 100
   end
 
+  def discounted_subtotal_of(item_id, discount)
+    subtotal_of(item_id) * (100 - discount) / 100
+  end
+
   def limit_reached?(item_id)
     count_of(item_id) == Item.find(item_id).inventory
   end
@@ -55,6 +59,17 @@ class Cart
     @contents['coupons'][coupon_code]['merchant_id'] = coupon.merchant_id
     @contents['coupons'][coupon_code]['merchant_name'] = merchant.name
     @contents['coupons'][coupon_code]['discount'] = coupon.discount
+    @contents['coupons'][coupon_code]['apply'] = false
+  end
+
+  def apply_coupon(coupon_code)
+    @contents['coupons'][coupon_code]['apply'] = true
+
+    coupon_merchant_id = @contents['coupons'][coupon_code]['merchant_id']
+    items_item_ids = @contents['items'].keys
+    items_merchant_ids = items_item_ids.map { |item_id| Item.find(item_id).merchant_id }
+
+    items_merchant_ids.any? { |id| id == coupon_merchant_id }
   end
 
   def coupons

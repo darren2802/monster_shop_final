@@ -1,85 +1,91 @@
-<h3>My Cart</h3>
-<br>
 <% if cart.items.empty? %>
-  <p>Your Cart is Empty!</p>
+  <h4>Cart is Empty</h4>
 <% else %>
-<table class="table">
-  <th></th>
-  <th>Name</th>
-  <th>Description</th>
-  <th>Sold By</th>
-  <th>Qty</th>
-  <th>Price</th>
-  <th>Subtotal</th>
-  <th>Coupon</th>
-  <th>Discount</th>
-  <th>Discounted<br>Subtoal</th>
-  <th>Change<br>Qty</th>
-  <th></th>
-  <% cart.items.each do |item| %>
-    <tr id='item-<%= item.id%>'>
-      <td><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw" class="cart_img"></td>
-      <td><%= link_to item.name, "/items/#{item.id}" %></td>
-      <td><%= item.description %></td>
-      <td><%= link_to item.merchant.name, "/merchants/#{item.merchant_id}" %> (Inventory: <%= item.inventory %>)</td>
-      <td><%= cart.count_of(item.id) %></td>
-      <td><%= number_to_currency(item.price / 100) %></td>
-      <td><%= number_to_currency(cart.subtotal_of(item.id)) %></td>
-      <td>[coupon]</td>
+  <h4>My Cart</h4>
+  <br>
+  <table class="table">
+    <th></th><th>Name</th><th>Description</th><th>Sold By</th><th>Qty</th><th>Price</th><th>Subtotal</th><th>Coupon</th><th>Discount</th><th>Discounted<br>Subtoal</th><th>Change<br>Qty</th><th></th>
+    <% cart.items.each do |item| %>
+      <tr id='item-<%= item.id%>'>
+        <td><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw" class="cart_img"></td>
+        <td><%= link_to item.name, "/items/#{item.id}" %></td>
+        <td><%= item.description %></td>
+        <td><%= link_to item.merchant.name, "/merchants/#{item.merchant_id}" %> (Inventory: <%= item.inventory %>)</td>
+        <td><%= cart.count_of(item.id) %></td>
+        <td><%= number_to_currency(item.price / 100) %></td>
+        <td><%= number_to_currency(cart.subtotal_of(item.id)) %></td>
+        <% if cart.coupons %>
+          <% cart.coupons.each do |coupon_code,coupon_details| %>
+            <% if coupon_details['merchant_id'] == item.merchant_id && coupon_details['apply'] %>
+              <td><%= coupon_code %></td>
+              <td><%= coupon_details['discount'] %>%</td>
+              <td><%= number_to_currency(cart.discounted_subtotal_of(item.id,coupon_details['discount'])) %></td>
+            <% else %>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+            <% end %>
+          <% end %>
+        <% end %>
+        <td><div class="btn-toolbar">
+          <%= button_to '+', "/cart/more/#{item.id}", class: "btn btn-success btn-sm mx-2", method: :patch unless cart.limit_reached?(item.id) %>
+          <%= button_to '-', "/cart/less/#{item.id}", class: "btn btn-danger btn-sm", method: :patch %>
+        </div></td>
+        <td><%= button_to 'Remove', "/cart/#{item.id}", class: "btn btn-danger btn-sm", method: :delete %></td>
+      </tr>
+    <% end %>
+    <tr>
+      <td colspan="3"></td>
+      <td><b>Totals</b></td>
+      <td><%= cart.count %></td>
+      <td></td>
+      <td><%= number_to_currency(cart.grand_total) %></td>
+      <td></td>
       <td>[discount]</td>
       <td>[discounted subtotal]</td>
-      <td><div class="btn-toolbar">
-        <%= button_to '+', "/cart/more/#{item.id}", class: "btn btn-success btn-sm mx-2", method: :patch unless cart.limit_reached?(item.id) %>
-        <%= button_to '-', "/cart/less/#{item.id}", class: "btn btn-danger btn-sm", method: :patch %>
-      </div></td>
-      <td><%= button_to 'Remove', "/cart/#{item.id}", class: "btn btn-danger btn-sm", method: :delete %></td>
+      <td colspan="2"></td>
     </tr>
-  <% end %>
-  <tr>
-    <td colspan="3"></td>
-    <td><b>Totals</b></td>
-    <td><%= cart.count %></td>
-    <td></td>
-    <td><%= number_to_currency(cart.grand_total) %></td>
-    <td></td>
-    <td>[discount]</td>
-    <td>[discounted subtotal]</td>
-    <td colspan="2"></td>
-  </tr>
-</table>
-
-<%= form_tag "/coupon" do %>
-<%= text_field_tag :code, nil, class: "form-control form-control-sm" %>
-<%= submit_tag 'Add Coupon', class: "btn btn-info btn-sm" %>
-<% end %>
-
-<% if cart.coupons %>
-  <h5>My Coupons</h5>
-  <table class="table">
-    <th>Id</th><th>Code</th><th>Name</th><th>Discount</th><th>Merchant</th><th></th><th></th>
-      <% cart.coupons.each do |coupon_code,coupon_details| %>
-        <tr>
-          <td><%= coupon_details['id'] %></td>
-          <td><%= coupon_code %></td>
-          <td><%= coupon_details['name'] %></td>
-          <td><%= coupon_details['discount'] %></td>
-          <td><%= coupon_details['merchant_name'] %></td>
-          <td><%= button_to 'Apply', "/coupon/#{coupon_details['id']}", class: "btn btn-success btn-sm", method: :patch %></td>
-          <td><%= button_to 'Remove', "/coupon/#{coupon_details['id']}", class: "btn btn-danger btn-sm", method: :delete %></td>
-        </tr>
-      <% end %>
-<% else %>
-  <h5>No Coupons Loaded</h5>
-<% end %>
-
-<div class="btn-toolbar">
-  <section id='checkout'>
-      <% if current_user %>
-        <%= button_to 'Check Out & Place Order', '/orders', class: "btn btn-success mx-4" %>
-      <% else %>
-        <p>You must <%= link_to 'register', registration_path %> or <%= link_to 'log in', login_path %> to checkout.</p>
-      <% end %>
-  </section>
+  </table>
   <%= button_to 'Empty Cart', '/cart', class: "btn btn-danger", method: :delete %>
-</div>
+  <div class="btn-toolbar">
+    <section id='checkout'>
+        <% if current_user %>
+          <%= button_to 'Check Out & Place Order', '/orders', class: "btn btn-success mx-4" %>
+        <% else %>
+          <p>You must <%= link_to 'register', registration_path %> or <%= link_to 'log in', login_path %> to checkout.</p>
+        <% end %>
+    </section>
+  </div>
+<br>
+  <% if !cart.coupons %>
+    <h4>No Coupons Loaded</h4>
+  <% else %>
+    <h4>My Coupons</h4>
+    <table class="table">
+      <th>Id</th><th>Code</th><th>Name</th><th>Discount</th><th>Merchant</th><th></th><th></th>
+        <% cart.coupons.each do |coupon_code,coupon_details| %>
+          <tr>
+            <td><%= coupon_details['id'] %></td>
+            <td><%= coupon_code %></td>
+            <td><%= coupon_details['name'] %></td>
+            <td><%= coupon_details['discount'] %></td>
+            <td><%= coupon_details['merchant_name'] %></td>
+            <td><%= button_to 'Apply', "/coupons/#{coupon_code}", class: "btn btn-success btn-sm", method: :patch %></td>
+            <td><%= button_to 'Remove', "/coupons/#{coupon_code}", class: "btn btn-danger btn-sm", method: :delete %></td>
+          </tr>
+        <% end %>
+    </table>
+  <% end %>
+  <br>
+  <%= form_tag "/coupons", class: "form-inline" do %>
+    <div class="form-group">
+      <%= label_tag :coupon_code %>
+      <div class="col-md-4">
+        <%= text_field_tag :code, nil, class: "form-control form-control-sm" %>
+      </div>
+    </div>
+    <div class="form-inline">
+      <%= submit_tag 'Add Coupon', class: "btn btn-info btn-sm" %>
+    </div>
+  <% end %>
 <% end %>

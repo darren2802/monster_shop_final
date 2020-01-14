@@ -5,6 +5,12 @@ class CouponsController < ApplicationController
     redirect_to "/cart"
   end
 
+  def apply_coupon
+    cart.apply_coupon(params[:coupon_code])
+
+    redirect_to "/cart"
+  end
+
   def remove_coupon
 
   end
