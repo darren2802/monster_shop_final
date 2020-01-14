@@ -2,36 +2,71 @@ require 'rails_helper'
 
 RSpec.describe 'Coupon Index Page' do
   before :each do
-    @merchant_1 = Merchant.create!(name: 'Megans Marmalades', address: '123 Main St', city: 'Denver', state: 'CO', zip: 80218)
-    @merchant_2 = Merchant.create!(name: 'Brians Bagels', address: '125 Main St', city: 'Denver', state: 'CO', zip: 80218)
-    @m_user = @merchant_1.users.create(name: 'Megan', address: '123 Main St', city: 'Denver', state: 'CO', zip: 80218, email: 'megan@example.com', password: 'securepassword')
-    @ogre = @merchant_1.items.create!(name: 'Ogre', description: "I'm an Ogre!", price: 20.25, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 5 )
-    @giant = @merchant_1.items.create!(name: 'Giant', description: "I'm a Giant!", price: 50, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 3 )
-    @hippo = @merchant_2.items.create!(name: 'Hippo', description: "I'm a Hippo!", price: 50, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 1 )
-    @order_1 = @m_user.orders.create!(status: "pending")
-    @order_2 = @m_user.orders.create!(status: "pending")
-    @order_3 = @m_user.orders.create!(status: "pending")
-    @order_item_1 = @order_1.order_items.create!(item: @hippo, price: @hippo.price, quantity: 2, fulfilled: false)
-    @order_item_2 = @order_2.order_items.create!(item: @hippo, price: @hippo.price, quantity: 2, fulfilled: true)
-    @order_item_3 = @order_2.order_items.create!(item: @ogre, price: @ogre.price, quantity: 2, fulfilled: false)
-    @order_item_4 = @order_3.order_items.create!(item: @giant, price: @giant.price, quantity: 2, fulfilled: false)
+    @merchant = create :merchant
+    @m_user = create(:user, merchant_id: @merchant.id)
     allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@m_user)
-    @coupons = create_list(:coupon, 5, merchant_id: @merchant_1.id)
+    @coupon = create(:coupon, discount: 50, merchant_id: @merchant.id)
+    @new_code = 'HF4JF'
+    @new_name = 'SuperDiscount842'
   end
 
-  it 'can display a list of coupons for a merchant' do
+  it 'can edit a coupon for a merchant' do
     visit '/merchant'
 
     click_link 'My Coupons'
 
-    expect(current_path).to eq("/merchant/coupons")
-
-    @coupons.each do |coupon|
-      within "#coupon-#{coupon.id}" do
-        expect(page).to have_content(coupon.code)
-        expect(page).to have_content(coupon.name)
-        expect(page).to have_content(coupon.discount)
-      end
+    within "#coupon-#{@coupon.id}" do
+      click_link 'Edit'
     end
+
+    expect(current_path).to eq("/merchant/coupons/#{@coupon.id}/edit")
+
+    within "#form-edit-coupon" do
+      page.has_field?("#coupon-code", with: @coupon.code)
+      page.has_field?("#coupon-name", with: @coupon.name)
+      page.has_field?("#coupon-discount", with: @coupon.discount)
+
+      fill_in 'code', with: @new_code
+      fill_in 'name', with: @new_name
+      page.select '25%', from: 'discount'
+
+      click_button 'Save Coupon'
+    end
+
+    expect(current_path).to eq("/merchant/coupons")
+    # expect(page).to have_content('Coupon updated successfully')
+
+    within "#coupon-#{@coupon.id}" do
+      expect(page).to have_content(@new_code)
+      expect(page).to have_content(@new_name)
+      expect(page).to have_content('25%')
+    end
+  end
+
+  it 'cannot edit a coupon if information is missing' do
+    visit '/merchant'
+
+    click_link 'My Coupons'
+
+    within "#coupon-#{@coupon.id}" do
+      click_link 'Edit'
+    end
+
+    within "#form-edit-coupon" do
+      page.has_field?("#coupon-code", with: @coupon.code)
+      page.has_field?("#coupon-name", with: @coupon.name)
+      page.has_field?("#coupon-discount", with: @coupon.discount)
+
+      new_code = 'HF4JF'
+      new_name = ''
+
+      fill_in 'code', with: new_code
+      fill_in 'name', with: new_name
+      page.select '25%', from: 'discount'
+
+      click_button 'Save Coupon'
+    end
+
+    # expect(page).to have_content('Coupon not updated, please try again')
   end
 end
