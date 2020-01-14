@@ -46,20 +46,31 @@
     <td>[discounted subtotal]</td>
     <td colspan="2"></td>
   </tr>
-  <tr>
-    <td colspan="5"></td>
-    <td colspan="2">Coupon Code:</td>
-    <td colspan="2">
-      <%= form_tag "/coupon" do %>
-        <%= text_field_tag :code, nil, class: "form-control form-control-sm" %>
-    </td>
-    <td colspan="2">
-        <%= submit_tag 'Apply Coupon', class: "btn btn-info btn-sm", method: :patch %>
-      <% end %>
-    </td>
-    <td colspan="2"></td>
-  </tr>
 </table>
+
+<%= form_tag "/coupon" do %>
+<%= text_field_tag :code, nil, class: "form-control form-control-sm" %>
+<%= submit_tag 'Add Coupon', class: "btn btn-info btn-sm" %>
+<% end %>
+
+<% if cart.coupons %>
+  <h5>My Coupons</h5>
+  <table class="table">
+    <th>Id</th><th>Code</th><th>Name</th><th>Discount</th><th>Merchant</th><th></th><th></th>
+      <% cart.coupons.each do |coupon_code,coupon_details| %>
+        <tr>
+          <td><%= coupon_details['id'] %></td>
+          <td><%= coupon_code %></td>
+          <td><%= coupon_details['name'] %></td>
+          <td><%= coupon_details['discount'] %></td>
+          <td><%= coupon_details['merchant_name'] %></td>
+          <td><%= button_to 'Apply', "/coupon/#{coupon_details['id']}", class: "btn btn-success btn-sm", method: :patch %></td>
+          <td><%= button_to 'Remove', "/coupon/#{coupon_details['id']}", class: "btn btn-danger btn-sm", method: :delete %></td>
+        </tr>
+      <% end %>
+<% else %>
+  <h5>No Coupons Loaded</h5>
+<% end %>
 
 <div class="btn-toolbar">
   <section id='checkout'>

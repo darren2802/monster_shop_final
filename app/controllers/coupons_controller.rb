@@ -1,8 +1,12 @@
 class CouponsController < ApplicationController
   def add_coupon
     cart.add_coupon(coupon_params['code'])
-require "pry"; binding.pry
+
     redirect_to "/cart"
+  end
+
+  def remove_coupon
+
   end
 
   private

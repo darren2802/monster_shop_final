@@ -46,6 +46,18 @@ class Cart
   end
 
   def add_coupon(coupon_code)
-    @contents["coupon_code"] = coupon_code
+    coupon_code.upcase!
+    @contents['coupons'] = Hash.new{ |h,k| h[k] = Hash.new} if !@contents['coupons']
+    coupon = Coupon.where('coupons.code = ?', coupon_code)[0]
+    merchant = Merchant.find(coupon.merchant_id)
+    @contents['coupons'][coupon_code]['id'] = coupon.id
+    @contents['coupons'][coupon_code]['name'] = coupon.name
+    @contents['coupons'][coupon_code]['merchant_id'] = coupon.merchant_id
+    @contents['coupons'][coupon_code]['merchant_name'] = merchant.name
+    @contents['coupons'][coupon_code]['discount'] = coupon.discount
+  end
+
+  def coupons
+    @contents['coupons']
   end
 end
