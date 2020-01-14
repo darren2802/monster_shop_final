@@ -46,10 +46,10 @@
   <% end %>
   <tr>
     <td colspan="4"></td>
-    <td>[total]</td>
+    <td><b><%= number_to_currency(@order.grand_total) %></b></td>
     <td></td>
-    <td><%= number_to_currency(556.43) %></td>
-    <td><%= number_to_currency(@order.grand_total - 556.43) %></td>
+    <td><b><%= number_to_currency(556.43) %></b></td>
+    <td><b><%= number_to_currency(@order.grand_total - 556.43) %></b></td>
   </tr>
 </table>
 <br>

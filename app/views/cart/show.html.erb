@@ -1,27 +1,58 @@
-<h2>My Cart</h2>
+<h3>My Cart</h3>
 <% if cart.items.empty? %>
   <p>Your Cart is Empty!</p>
 <% else %>
-<h3>Total: <%= number_to_currency(cart.grand_total) %></h3>
+<h3>Items</h3>
+<table class="table">
+  <th></th>
+  <th>Name</th>
+  <th>Description</th>
+  <th>Sold By</th>
+  <th>Qty</th>
+  <th>Price</th>
+  <th>Subtotal</th>
+  <th>Coupon</th>
+  <th>Discount</th>
+  <th>Discounted<br>Subtoal</th>
+  <th>Change<br>Qty</th>
+  <th>Remove</th>
   <% cart.items.each do |item| %>
-    <section id='item-<%= item.id%>'>
-      <h2><%= link_to item.name, "/items/#{item.id}" %></h2>
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw">
-      <p>Price: <%= number_to_currency(item.price) %></p>
-      <p>Quantity: <%= cart.count_of(item.id) %></p>
-      <p>Subtotal: <%= number_to_currency(cart.subtotal_of(item.id)) %></p>
-      <p>Sold by: <%= link_to item.merchant.name, "/merchants/#{item.merchant_id}" %>, Inventory: <%= item.inventory %></p>
-      <%= button_to 'More of This!', "/cart/more/#{item.id}", method: :patch unless cart.limit_reached?(item.id) %>
-      <%= button_to 'Less of This!', "/cart/less/#{item.id}", method: :patch %>
-      <%= button_to 'Remove', "/cart/#{item.id}", method: :delete %>
-    </section>
+    <tr id='item-<%= item.id%>'>
+      <td><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw" class="cart_img"></td>
+      <td><%= link_to item.name, "/items/#{item.id}" %></td>
+      <td><%= item.description %></td>
+      <td><%= link_to item.merchant.name, "/merchants/#{item.merchant_id}" %> (Inventory: <%= item.inventory %>)</td>
+      <td><%= cart.count_of(item.id) %></td>
+      <td><%= number_to_currency(item.price / 100) %></td>
+      <td><%= number_to_currency(cart.subtotal_of(item.id)) %></td>
+      <td>[coupon]</td>
+      <td>[discount]</td>
+      <td>[discounted subtotal]</td>
+      <td><div class="btn-toolbar">
+        <%= button_to '+', "/cart/more/#{item.id}", class: "btn btn-success btn-sm mx-2", method: :patch unless cart.limit_reached?(item.id) %>
+        <%= button_to '-', "/cart/less/#{item.id}", class: "btn btn-danger btn-sm", method: :patch %>
+      </div></td>
+      <td><%= button_to 'Remove', "/cart/#{item.id}", class: "btn btn-danger btn-sm", method: :delete %></td>
+    </tr>
   <% end %>
+  <tr>
+    <td colspan="3"></td>
+    <td><b>Totals</b></td>
+    <td><%= cart.count %></td>
+    <td></td>
+    <td><%= number_to_currency(cart.grand_total) %></td>
+  </tr>
+</table>
+
+<div class="btn-toolbar">
   <section id='checkout'>
-    <% if current_user %>
-      <%= button_to 'Check Out', '/orders' %>
-    <% else %>
-      <p>You must <%= link_to 'register', registration_path %> or <%= link_to 'log in', login_path %> to checkout.</p>
-    <% end %>
+      <% if current_user %>
+        <%= button_to 'Apply Coupon', '/coupons', class: "btn btn-success", method: :patch %>
+        <%= button_to 'Check Out & Place Order', '/orders', class: "btn btn-success mx-4" %>
+      <% else %>
+        <p>You must <%= link_to 'register', registration_path %> or <%= link_to 'log in', login_path %> to checkout.</p>
+      <% end %>
   </section>
-  <%= button_to 'Empty Cart', '/cart', method: :delete %>
+  <%= button_to 'Empty Cart', '/cart', class: "btn btn-danger", method: :delete %>
+</div>
 <% end %>
