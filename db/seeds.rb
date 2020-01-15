@@ -6,9 +6,50 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
+OrderItem.destroy_all
+Order.destroy_all
+User.destroy_all
+Coupon.destroy_all
+Merchant.destroy_all
+Item.destroy_all
 
-megan = Merchant.create!(name: 'Megans Marmalades', address: '123 Main St', city: 'Denver', state: 'CO', zip: 80218)
-brian = Merchant.create!(name: 'Brians Bagels', address: '125 Main St', city: 'Denver', state: 'CO', zip: 80218)
-megan.items.create!(name: 'Ogre', description: "I'm an Ogre!", price: 20, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 5 )
-megan.items.create!(name: 'Giant', description: "I'm a Giant!", price: 50, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 3 )
-brian.items.create!(name: 'Hippo', description: "I'm a Hippo!", price: 50, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 3 )
+merchants = FactoryBot.create_list(:merchant, 15)
+items = []
+merchants.each do |merchant|
+  items << FactoryBot.create_list(:item, 30, merchant: merchant)
+  merchant.coupons << FactoryBot.create_list(:coupon, 5, merchant: merchant)
+end
+items.flatten!
+
+users = FactoryBot.create_list(:user, 50)
+
+counter = 0
+
+# add merchant users
+loop do
+  user = users.sample
+  if !user.merchant_employee?
+    user.update(merchant_id: merchants[counter].id, role: 1)
+    counter += 1
+  end
+  break if counter == 15
+end
+
+# add admin user
+user = users.last
+user.update(merchant_id: nil, role: 2)
+
+counter = 0
+
+orders = []
+20.times do
+  orders << Order.create(user_id: users.sample.id)
+end
+
+orders.each do |order|
+  nr_items = rand(1..10)
+  order_items = items.sample(nr_items)
+  order_items.each do |order_item|
+    OrderItem.create(item_id: order_item.id, order_id: order.id, price: order_item.price, quantity: rand(1..100))
+  end
+end

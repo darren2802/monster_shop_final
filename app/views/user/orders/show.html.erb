@@ -1,18 +1,71 @@
-<h2>Order <%= @order.id %></h2>
-<p>Created On: <%= @order.created_at %></p>
-<p>Updated On: <%= @order.updated_at %></p>
-<p>Status: <%= @order.status %></p>
-<p><%= @order.count_of_items %> items</p>
-<p>Total: <%= number_to_currency(@order.grand_total) %></p>
-<%= button_to 'Cancel Order', "/profile/orders/#{@order.id}", method: :delete if @order.pending? %>
-
-<h2>Order Items</h2>
-<% @order.order_items.each do |order_item| %>
-  <section id='order-item-<%= order_item.id %>'>
-    <h3><%= link_to order_item.item.name, item_path(order_item.item) %></h3>
-    <p><%= order_item.item.description %></p>
-    <p>Quantity: <%= order_item.quantity %></p>
-    <p>Price: <%= number_to_currency(order_item.price) %></p>
-    <p>Subtotal: <%= number_to_currency(order_item.subtotal) %></p>
-  </section>
-<% end %>
+<h5>Order Summary</h5>
+<br>
+<table class="table">
+  <th>Order Number</th>
+  <th>Created</th>
+  <th>Updated</th>
+  <th>Status</th><th>Qty</th>
+  <th>Total</th>
+  <tr>
+    <td><%= @order.id %></td>
+    <td id="order-created"><%= @order.created_at.strftime('%F') %></td>
+    <td id="order-updated"><%= @order.updated_at.strftime('%F') %></td>
+    <td id="order-status"><%= @order.status %></td>
+    <td id="order-qty"><%= @order.count_of_items %></td>
+    <td id="order-grand-total"><%= number_to_currency(@order.grand_total) %></td>
+  </tr>
+  <tr><td colspan="6"> </td></tr>
+  <tr>
+    <td colspan="3"></td><td>Coupon Code:</td><td><%= @order.coupon_code %></td><td></td>
+  </tr>
+  <tr>
+    <td colspan="3"></td><td>Discount*</td><td><%= @order.discount_pct %>%</td><td>-<%= number_to_currency(@order.total_discount) %></td>
+  </tr>
+  <tr>
+    <td colspan="3"></td><td colspan="2"><b>Discounted Total</b></td><td><b><%= number_to_currency(@order.discounted_grand_total) %></b></td>
+  </tr>
+  <tr>
+    <td colspan="3"></td><td colspan="3"><small>*Applied to qualifying items only</small></td>
+  </tr>
+</table>
+<br>
+<h5>Items on Order</h5>
+<br>
+<table class="table">
+  <th>Name</th>
+  <th>Description</th>
+  <th>Qty</th>
+  <th>Price</th>
+  <th>Subtotal</th>
+  <th>Coupon Code</th>
+  <th>Discount</th>
+  <th>Discounted Subtotal</th>
+  <% @order.order_items.each do |order_item| %>
+    <tr id='order-item-<%= order_item.id %>'>
+      <td><%= link_to order_item.item.name, item_path(order_item.item) %></td>
+      <td><%= order_item.item.description %></td>
+      <td><%= order_item.quantity %></td>
+      <td><%= number_to_currency(order_item.price / 100) %></td>
+      <td><%= number_to_currency(order_item.subtotal) %></td>
+      <% if order_item.coupon %>
+        <td><%= order_item.coupon.code %></td>
+        <td><%= order_item.coupon.discount %>%</td>
+      <% else %>
+        <td>-</td>
+        <td>-</td>
+      <% end %>
+      <td><%= number_to_currency(order_item.discounted_subtotal) %></td>
+    </tr>
+  <% end %>
+  <tr>
+    <td colspan="4"></td>
+    <td><b><%= number_to_currency(@order.grand_total) %></b></td>
+    <td></td>
+    <td></td>
+    <td><b><%= number_to_currency(@order.discounted_grand_total) %></b></td>
+  </tr>
+</table>
+<br>
+<%= button_to 'Cancel Order', "/profile/orders/#{@order.id}", class: "btn btn-danger", method: :delete if @order.pending? %>
+<br>
+<hr>

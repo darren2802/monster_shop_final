@@ -6,9 +6,9 @@ RSpec.describe 'Cart Show Page' do
     before :each do
       @megan = Merchant.create!(name: 'Megans Marmalades', address: '123 Main St', city: 'Denver', state: 'CO', zip: 80218)
       @brian = Merchant.create!(name: 'Brians Bagels', address: '125 Main St', city: 'Denver', state: 'CO', zip: 80218)
-      @ogre = @megan.items.create!(name: 'Ogre', description: "I'm an Ogre!", price: 20, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 5 )
-      @giant = @megan.items.create!(name: 'Giant', description: "I'm a Giant!", price: 50, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 3 )
-      @hippo = @brian.items.create!(name: 'Hippo', description: "I'm a Hippo!", price: 50, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 3 )
+      @ogre = @megan.items.create!(name: 'Ogre', description: "I'm an Ogre!", price: 2000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 5 )
+      @giant = @megan.items.create!(name: 'Giant', description: "I'm a Giant!", price: 5000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 3 )
+      @hippo = @brian.items.create!(name: 'Hippo', description: "I'm a Hippo!", price: 5000, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 3 )
     end
 
     describe 'I can see my cart' do
@@ -22,24 +22,46 @@ RSpec.describe 'Cart Show Page' do
 
         visit '/cart'
 
-        expect(page).to have_content("Total: #{number_to_currency((@ogre.price * 1) + (@hippo.price * 2))}")
+        within "#grand-total" do
+          expect(page).to have_content("#{number_to_currency((@ogre.price / 100 * 1) + (@hippo.price / 100 * 2))}")
+        end
 
         within "#item-#{@ogre.id}" do
-          expect(page).to have_link(@ogre.name)
-          expect(page).to have_content("Price: #{number_to_currency(@ogre.price)}")
-          expect(page).to have_content("Quantity: 1")
-          expect(page).to have_content("Subtotal: #{number_to_currency(@ogre.price * 1)}")
-          expect(page).to have_content("Sold by: #{@megan.name}")
+          within "#cart-item-name" do
+            expect(page).to have_link(@ogre.name)
+          end
+          within "#cart-item-price" do
+            expect(page).to have_content(number_to_currency(@ogre.price / 100 ))
+          end
+          within "#cart-item-qty" do
+            expect(page).to have_content(1)
+          end
+          within "#cart-item-subtotal" do
+            expect(page).to have_content(number_to_currency(@ogre.price / 100 * 1))
+          end
+          within "#cart-item-merchant" do
+            expect(page).to have_content(@megan.name)
+          end
           expect(page).to have_css("img[src*='#{@ogre.image}']")
           expect(page).to have_link(@megan.name)
         end
 
         within "#item-#{@hippo.id}" do
-          expect(page).to have_link(@hippo.name)
-          expect(page).to have_content("Price: #{number_to_currency(@hippo.price)}")
-          expect(page).to have_content("Quantity: 2")
-          expect(page).to have_content("Subtotal: #{number_to_currency(@hippo.price * 2)}")
-          expect(page).to have_content("Sold by: #{@brian.name}")
+          within "#cart-item-name" do
+            expect(page).to have_link(@hippo.name)
+          end
+          within "#cart-item-price" do
+            expect(page).to have_content(number_to_currency(@hippo.price / 100))
+          end
+          within "#cart-item-qty" do
+            expect(page).to have_content("2")
+          end
+          within "#cart-item-subtotal" do
+            expect(page).to have_content(number_to_currency(@hippo.price / 100 * 2))
+          end
+          within "#cart-item-merchant" do
+            expect(page).to have_content(@brian.name)
+          end
           expect(page).to have_css("img[src*='#{@hippo.image}']")
           expect(page).to have_link(@brian.name)
         end
@@ -48,7 +70,7 @@ RSpec.describe 'Cart Show Page' do
       it "I can visit an empty cart page" do
         visit '/cart'
 
-        expect(page).to have_content('Your Cart is Empty!')
+        expect(page).to have_content('Cart is Empty')
         expect(page).to_not have_button('Empty Cart')
       end
     end
@@ -67,7 +89,7 @@ RSpec.describe 'Cart Show Page' do
         click_button 'Empty Cart'
 
         expect(current_path).to eq('/cart')
-        expect(page).to have_content('Your Cart is Empty!')
+        expect(page).to have_content('Cart is Empty')
         expect(page).to have_content('Cart: 0')
         expect(page).to_not have_button('Empty Cart')
       end
@@ -103,12 +125,14 @@ RSpec.describe 'Cart Show Page' do
         visit '/cart'
 
         within "#item-#{@hippo.id}" do
-          click_button('More of This!')
+          click_button('+')
         end
 
         expect(current_path).to eq('/cart')
         within "#item-#{@hippo.id}" do
-          expect(page).to have_content('Quantity: 3')
+          within "#cart-item-qty" do
+            expect(page).to have_content('3')
+          end
         end
       end
 
@@ -144,12 +168,14 @@ RSpec.describe 'Cart Show Page' do
         visit '/cart'
 
         within "#item-#{@hippo.id}" do
-          click_button('Less of This!')
+          click_button('-')
         end
 
         expect(current_path).to eq('/cart')
         within "#item-#{@hippo.id}" do
-          expect(page).to have_content('Quantity: 2')
+          within "#cart-item-qty" do
+            expect(page).to have_content('2')
+          end
         end
       end
 
@@ -160,7 +186,7 @@ RSpec.describe 'Cart Show Page' do
         visit '/cart'
 
         within "#item-#{@hippo.id}" do
-          click_button('Less of This!')
+          click_button('-')
         end
 
         expect(current_path).to eq('/cart')

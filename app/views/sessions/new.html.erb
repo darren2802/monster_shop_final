@@ -1,9 +1,19 @@
 <%= form_tag login_path do %>
+<div class="form-inline">
   <%= label_tag :email %>
-  <%= email_field_tag :email %>
-
+  <div class="col-md-4">
+    <%= email_field_tag :email, nil, class: "form-control" %>
+  </div>
+</div>
+<br>
+<div class="form-inline">
   <%= label_tag :password %>
-  <%= password_field_tag :password %>
-
-  <%= submit_tag 'Log In' %>
+  <div class="col-md-4">
+    <%= password_field_tag :password, nil, :class => "form-control" %>
+  </div>
+</div>
+<br>
+<div class="form-inline">
+  <%= submit_tag 'Log In', class: "btn btn-primary" %>
 <% end %>
+</div>

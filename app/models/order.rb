@@ -6,7 +6,24 @@ class Order < ApplicationRecord
   enum status: ['pending', 'packaged', 'shipped', 'cancelled']
 
   def grand_total
-    order_items.sum('price * quantity')
+    order_items.sum('price / 100 * quantity')
+  end
+
+  def discounted_grand_total
+    grand_total - total_discount
+  end
+
+  def total_discount
+    order_items.joins(:coupon)
+                .sum('price / 100 * (coupons.discount) / 100')
+  end
+
+  def coupon_code
+    order_items.joins(:coupon).distinct(:code).pluck(:code)[0]
+  end
+
+  def discount_pct
+    order_items.joins(:coupon).maximum(:discount)
   end
 
   def count_of_items
@@ -25,7 +42,7 @@ class Order < ApplicationRecord
     order_items
       .joins("JOIN items ON order_items.item_id = items.id")
       .where("items.merchant_id = #{merchant_id}")
-      .sum('order_items.price * order_items.quantity')
+      .sum('order_items.price / 100 * order_items.quantity')
   end
 
   def merchant_quantity(merchant_id)

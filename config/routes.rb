@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   get :root, to: 'welcome#index'
+  get '/', to: 'welcome#index'
 
   resources :merchants do
     resources :items, only: [:index]
@@ -17,6 +18,11 @@ Rails.application.routes.draw do
   delete '/cart', to: 'cart#empty'
   patch '/cart/:change/:item_id', to: 'cart#update_quantity'
   delete '/cart/:item_id', to: 'cart#remove_item'
+
+  post '/coupons', to: 'coupons#add_coupon'
+  patch '/coupons/:coupon_code/apply', to: 'coupons#apply_coupon'
+  patch '/coupons/:coupon_code/remove', to: 'coupons#remove_coupon'
+  delete '/coupons/:coupon_code', to: 'coupons#destroy'
 
   get '/registration', to: 'users#new', as: :registration
   resources :users, only: [:create, :update]
@@ -39,6 +45,7 @@ Rails.application.routes.draw do
     resources :items, only: [:index, :new, :create, :edit, :update, :destroy]
     put '/items/:id/change_status', to: 'items#change_status'
     get '/orders/:id/fulfill/:order_item_id', to: 'orders#fulfill'
+    resources :coupons, only: [:index, :create, :edit, :update, :destroy]
   end
 
   namespace :admin do
