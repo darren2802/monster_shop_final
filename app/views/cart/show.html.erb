@@ -19,7 +19,7 @@
             <% if coupon_details['merchant_id'] == item.merchant_id && coupon_details['apply'] %>
               <td><%= coupon_code %></td>
               <td><%= coupon_details['discount'] %>%</td>
-              <td><%= number_to_currency(cart.discounted_subtotal_of(item.id,coupon_details['discount'])) %></td>
+              <td id="cart-item-discounted-price"><%= number_to_currency(cart.discounted_subtotal_of(item.id,coupon_details['discount'])) %></td>
             <% end %>
           <% end %>
         <% else %>
@@ -66,7 +66,7 @@
     <table class="table">
       <th>Id</th><th>Code</th><th>Name</th><th>Discount</th><th>Merchant</th><th></th><th></th><th></th>
         <% cart.coupons.each do |coupon_code,coupon_details| %>
-          <tr>
+          <tr id="coupon-<%= coupon_details['id']%>">
             <td><%= coupon_details['id'] %></td>
             <td><%= coupon_code %></td>
             <td><%= coupon_details['name'] %></td>
@@ -80,9 +80,9 @@
     </table>
   <% end %>
   <br>
-  <%= form_tag "/coupons", class: "form-inline" do %>
+  <%= form_tag "/coupons", id: 'form-add-coupon', class: "form-inline" do %>
     <div class="form-group">
-      <%= label_tag :coupon_code %>
+      <%= label_tag :code %>
       <div class="col-md-4">
         <%= text_field_tag :code, nil, class: "form-control form-control-sm" %>
       </div>

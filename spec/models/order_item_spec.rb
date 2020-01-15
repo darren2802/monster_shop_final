@@ -17,7 +17,8 @@ RSpec.describe OrderItem do
       @user = User.create!(name: 'Megan', address: '123 Main St', city: 'Denver', state: 'CO', zip: 80218, email: 'megan@example.com', password: 'securepassword')
       @order_1 = @user.orders.create!
       @order_2 = @user.orders.create!
-      @order_item_1 = @order_1.order_items.create!(item: @ogre, price: @ogre.price, quantity: 2)
+      @coupon = create(:coupon, code: 'LEGKR', name: 'KillerDiscount568', discount: 50, merchant_id: @megan.id)
+      @order_item_1 = @order_1.order_items.create!(item: @ogre, price: @ogre.price, quantity: 2, coupon: @coupon)
       @order_item_2 = @order_1.order_items.create!(item: @hippo, price: @hippo.price, quantity: 3)
       @order_item_3 = @order_2.order_items.create!(item: @hippo, price: @hippo.price, quantity: 27)
     end
@@ -26,6 +27,15 @@ RSpec.describe OrderItem do
       expect(@order_item_1.subtotal).to eq(40.5)
       expect(@order_item_2.subtotal).to eq(150)
       expect(@order_item_3.subtotal).to eq(1350)
+    end
+
+    it '.discount' do
+      expect(@order_item_1.discount).to eq(20.25)
+      expect(@order_item_2.coupon_id).to be_nil
+    end
+
+    it '.discounted_subtotal' do
+      expect(@order_item_1.discounted_subtotal).to eq(20.25)
     end
 
     it '.fulfillable?' do

@@ -41,14 +41,6 @@ class Cart
     grand_total
   end
 
-  def discounted_grand_total
-    discounted_grand_total = 0.0
-    @contents['items'].each do |item_id, quantity|
-      discounted_grand_total += Item.find(item_id).price / 100 * quantity
-    end
-    discounted_grand_total
-  end
-
   def count_of(item_id)
     @contents['items'][item_id.to_s]
   end

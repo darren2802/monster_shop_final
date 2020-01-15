@@ -13,6 +13,7 @@ RSpec.describe Cart do
         @ogre.id.to_s => 1,
         @giant.id.to_s => 2
         }})
+      @coupon = create(:coupon, code: 'LEGKR', name: 'KillerDiscount568', discount: 50, merchant_id: @megan.id)
     end
 
     it '.contents' do
@@ -56,6 +57,13 @@ RSpec.describe Cart do
       expect(@cart.subtotal_of(@giant.id)).to eq(100)
     end
 
+    it '.discounted_subtotal_of()' do
+      @cart.add_coupon('LEGKR')
+      @cart.apply_coupon('LEGKR')
+
+      expect(@cart.discounted_subtotal_of(@ogre.id, @coupon.discount)).to eq(10)
+    end
+
     it '.limit_reached?()' do
       expect(@cart.limit_reached?(@ogre.id)).to eq(false)
       expect(@cart.limit_reached?(@giant.id)).to eq(true)
@@ -65,6 +73,70 @@ RSpec.describe Cart do
       @cart.less_item(@giant.id.to_s)
 
       expect(@cart.count_of(@giant.id)).to eq(1)
+    end
+
+    it '.add_coupon()' do
+      @cart.add_coupon('LEGKR')
+
+      expect(@cart.contents).to eq({
+        "items"=>{@ogre.id.to_s=>1, @giant.id.to_s=>2},
+         "coupons"=>
+          { 'LEGKR' =>
+            {"id" => @coupon.id,
+             "name"=> "KillerDiscount568",
+             "merchant_id" => @megan.id,
+             "merchant_name" => "Megans Marmalades",
+             "discount"=> 50,
+             "apply"=>false}}})
+    end
+
+    it '.apply_coupon()' do
+      @cart.add_coupon('LEGKR')
+      @cart.apply_coupon('LEGKR')
+
+      expect(@cart.contents['coupons']['LEGKR']['apply']).to be true
+    end
+
+    it '.remove_coupon()' do
+      @cart.add_coupon('LEGKR')
+      @cart.apply_coupon('LEGKR')
+
+      expect(@cart.contents['coupons']['LEGKR']['apply']).to be true
+
+      @cart.remove_coupon('LEGKR')
+
+      expect(@cart.contents['coupons']['LEGKR']['apply']).to be false
+    end
+
+    it '.destroy_coupon()' do
+      @cart.add_coupon('LEGKR')
+
+      expect(@cart.contents['coupons'].keys).to eq(['LEGKR'])
+
+      @cart.destroy_coupon('LEGKR')
+
+      expect(@cart.contents['coupons'].empty?).to be true
+    end
+
+    it '.item_has_relevant_coupon()' do
+      @cart.add_coupon('LEGKR')
+      @cart.apply_coupon('LEGKR')
+
+      expect(@cart.item_has_relevant_coupon(@megan.id)).to be true
+
+      expect(@cart.item_has_relevant_coupon(@brian.id)).to be false
+    end
+
+    it '.coupons' do
+      @cart.add_coupon('LEGKR')
+
+      expect(@cart.coupons).to eq({ 'LEGKR' =>
+        {"id" => @coupon.id,
+         "name"=> "KillerDiscount568",
+         "merchant_id" => @megan.id,
+         "merchant_name" => "Megans Marmalades",
+         "discount"=> 50,
+         "apply"=>false}})
     end
   end
 end
