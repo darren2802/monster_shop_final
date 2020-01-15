@@ -54,3 +54,5 @@
 </table>
 <br>
 <%= button_to 'Cancel Order', "/profile/orders/#{@order.id}", class: "btn btn-danger", method: :delete if @order.pending? %>
+<br>
+<hr>

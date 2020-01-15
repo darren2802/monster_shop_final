@@ -80,7 +80,6 @@ class Cart
     coupon_merchant_id = @contents['coupons'][coupon_code]['merchant_id']
     items_item_ids = @contents['items'].keys
     items_merchant_ids = items_item_ids.map { |item_id| Item.find(item_id).merchant_id }
-
     items_merchant_ids.any? { |id| id == coupon_merchant_id }
   end
 
@@ -95,6 +94,10 @@ class Cart
 
   def remove_coupon(coupon_code)
     @contents['coupons'][coupon_code]['apply'] = false
+  end
+
+  def destroy_coupon(coupon_code)
+    @contents['coupons'].delete(coupon_code)
   end
 
   def coupons

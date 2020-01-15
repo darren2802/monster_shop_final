@@ -22,7 +22,9 @@ class CouponsController < ApplicationController
   end
 
   def destroy
-
+    cart.destroy_coupon(params[:coupon_code])
+    flash[:notice] = 'Coupon deleted'
+    redirect_to "/cart"
   end
 
   private

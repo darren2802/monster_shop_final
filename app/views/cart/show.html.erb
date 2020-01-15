@@ -48,15 +48,13 @@
   </table>
   <%= button_to 'Empty Cart', '/cart', class: "btn btn-danger", method: :delete %>
   <br>
-  <div class="btn-toolbar">
-    <section id='checkout'>
-        <% if current_user %>
-          <%= button_to 'Check Out & Place Order', '/orders', class: "btn btn-success mx-4" %>
-        <% else %>
-          <p>You must <%= link_to 'register', registration_path %> or <%= link_to 'log in', login_path %> to checkout.</p>
-        <% end %>
-    </section>
-  </div>
+  <section id='checkout'>
+      <% if current_user %>
+        <%= button_to 'Check Out & Place Order', '/orders', class: "btn btn-success" %>
+      <% else %>
+        <p>You must <%= link_to 'register', registration_path %> or <%= link_to 'log in', login_path %> to checkout.</p>
+      <% end %>
+  </section>
 <br>
 <hr>
 <br>
@@ -72,7 +70,7 @@
             <td><%= coupon_details['id'] %></td>
             <td><%= coupon_code %></td>
             <td><%= coupon_details['name'] %></td>
-            <td><%= coupon_details['discount'] %></td>
+            <td><%= coupon_details['discount'] %>%</td>
             <td><%= coupon_details['merchant_name'] %></td>
             <td><%= button_to 'Apply', "/coupons/#{coupon_code}/apply", class: "btn btn-success btn-sm", method: :patch %></td>
             <td><%= button_to 'Remove', "/coupons/#{coupon_code}/remove", class: "btn btn-info btn-sm", method: :patch %></td>

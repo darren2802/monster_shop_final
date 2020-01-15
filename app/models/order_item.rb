@@ -1,6 +1,7 @@
 class OrderItem < ApplicationRecord
   belongs_to :order
   belongs_to :item
+  belongs_to :coupon, optional: true
 
   def subtotal
     quantity * price / 100

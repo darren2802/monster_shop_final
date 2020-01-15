@@ -3,8 +3,6 @@ class CartController < ApplicationController
 
   def add_item
     item = Item.find(params[:item_id])
-    # session[:cart] ||= {}
-    # session[:cart] ||= { items: Hash.new(0), coupon: Hash.new() }
     session[:cart] ||= Hash.new{ |h,k| h[k] = Hash.new(0) }
     if cart.limit_reached?(item.id)
       flash[:notice] = "You have all the item's inventory in your cart already!"
