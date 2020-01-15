@@ -42,7 +42,7 @@ RSpec.describe 'Merchant Dashboard' do
         within "#order-#{@order_2.id}" do
           expect(page).to have_link("#{@order_2.id}")
           within "#potential-revenue" do
-            expect(page).to have_content('$%.2f' % @order_2.merchant_subtotal(@merchant_1.id))
+            expect(page).to have_content('$%.2f' % @order_2.merchant_subtotal(@merchant_1.id).round(2))
           end
           expect(page).to have_content(@order_2.merchant_quantity(@merchant_1.id))
           expect(page).to have_content(@order_2.created_at)

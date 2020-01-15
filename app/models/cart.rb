@@ -85,8 +85,10 @@ class Cart
   end
 
   def item_has_relevant_coupon(merchant_id)
-    @contents['coupons'].each do |coupon_code,coupon_details|
-      return true if merchant_id == coupon_details['merchant_id'] && coupon_details['apply'] == true
+    if @contents['coupons']
+      @contents['coupons'].each do |coupon_code,coupon_details|
+        return true if merchant_id == coupon_details['merchant_id'] && coupon_details['apply'] == true
+      end
     end
     return false
   end

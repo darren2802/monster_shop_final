@@ -8,12 +8,12 @@
     <% cart.items.each do |item| %>
       <tr id='item-<%= item.id%>'>
         <td><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw" class="cart_img"></td>
-        <td><%= link_to item.name, "/items/#{item.id}" %></td>
-        <td><%= item.description %></td>
-        <td><%= link_to item.merchant.name, "/merchants/#{item.merchant_id}" %> (Inventory: <%= item.inventory %>)</td>
-        <td><%= cart.count_of(item.id) %></td>
-        <td><%= number_to_currency(item.price / 100) %></td>
-        <td><%= number_to_currency(cart.subtotal_of(item.id)) %></td>
+        <td id="cart-item-name"><%= link_to item.name, "/items/#{item.id}" %></td>
+        <td id="cart-item-description"><%= item.description %></td>
+        <td id="cart-item-merchant"><%= link_to item.merchant.name, "/merchants/#{item.merchant_id}" %> (Inventory: <%= item.inventory %>)</td>
+        <td id="cart-item-qty"><%= cart.count_of(item.id) %></td>
+        <td id="cart-item-price"><%= number_to_currency(item.price / 100) %></td>
+        <td id="cart-item-subtotal"><%= number_to_currency(cart.subtotal_of(item.id)) %></td>
         <% if cart.item_has_relevant_coupon(item.merchant_id) %>
           <% cart.coupons.each do |coupon_code,coupon_details| %>
             <% if coupon_details['merchant_id'] == item.merchant_id && coupon_details['apply'] %>
@@ -39,7 +39,7 @@
       <td><b>Totals</b></td>
       <td><%= cart.count %></td>
       <td></td>
-      <td><%= number_to_currency(cart.grand_total) %></td>
+      <td id="grand-total"><%= number_to_currency(cart.grand_total) %></td>
       <td></td>
       <td></td>
       <td>[discounted subtotal]</td>
@@ -47,6 +47,7 @@
     </tr>
   </table>
   <%= button_to 'Empty Cart', '/cart', class: "btn btn-danger", method: :delete %>
+  <br>
   <div class="btn-toolbar">
     <section id='checkout'>
         <% if current_user %>
@@ -57,10 +58,13 @@
     </section>
   </div>
 <br>
+<hr>
+<br>
   <% if !cart.coupons %>
     <h4>No Coupons Loaded</h4>
   <% else %>
     <h4>My Coupons</h4>
+    <br>
     <table class="table">
       <th>Id</th><th>Code</th><th>Name</th><th>Discount</th><th>Merchant</th><th></th><th></th><th></th>
         <% cart.coupons.each do |coupon_code,coupon_details| %>
@@ -90,3 +94,5 @@
     </div>
   <% end %>
 <% end %>
+<br>
+<hr>

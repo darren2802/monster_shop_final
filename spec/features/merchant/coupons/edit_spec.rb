@@ -1,13 +1,18 @@
 require 'rails_helper'
 
-RSpec.describe 'Coupon Index Page' do
+RSpec.describe 'Coupon Edit' do
   before :each do
     @merchant = create :merchant
     @m_user = create(:user, merchant_id: @merchant.id)
-    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@m_user)
+
     @coupon = create(:coupon, discount: 50, merchant_id: @merchant.id)
     @new_code = 'HF4JF'
     @new_name = 'SuperDiscount842'
+
+    visit '/login'
+    fill_in 'Email', with: @m_user.email
+    fill_in 'Password', with: 'password'
+    click_button 'Log In'
   end
 
   it 'can edit a coupon for a merchant' do

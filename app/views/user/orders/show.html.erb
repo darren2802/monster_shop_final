@@ -6,11 +6,11 @@
   <th>Total</th>
   <tr>
     <td><%= @order.id %></td>
-    <td><%= @order.created_at.strftime('%F') %></td>
-    <td><%= @order.updated_at.strftime('%F') %></td>
-    <td><%= @order.status %></td>
-    <td><%= @order.count_of_items %></td>
-    <td><%= number_to_currency(@order.grand_total) %></td>
+    <td id="order-created"><%= @order.created_at.strftime('%F') %></td>
+    <td id="order-updated"><%= @order.updated_at.strftime('%F') %></td>
+    <td id="order-status"><%= @order.status %></td>
+    <td id="order-qty"><%= @order.count_of_items %></td>
+    <td id="order-grand-total"><%= number_to_currency(@order.grand_total) %></td>
   </tr>
   <tr><td colspan="6"> </td></tr>
   <tr>

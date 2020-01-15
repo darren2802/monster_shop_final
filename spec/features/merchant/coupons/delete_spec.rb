@@ -4,8 +4,12 @@ RSpec.describe 'Coupon Delete' do
   before :each do
     @merchant = create :merchant
     @m_user = create(:user, merchant_id: @merchant.id)
-    allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@m_user)
     @coupon = create(:coupon, merchant_id: @merchant.id)
+
+    visit '/login'
+    fill_in 'Email', with: @m_user.email
+    fill_in 'Password', with: 'password'
+    click_button 'Log In'
   end
 
   it 'can delete a coupon for a merchant' do
