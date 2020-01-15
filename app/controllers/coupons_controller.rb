@@ -6,12 +6,22 @@ class CouponsController < ApplicationController
   end
 
   def apply_coupon
-    cart.apply_coupon(params[:coupon_code])
+    if cart.apply_coupon(params[:coupon_code])
+      flash[:success] = 'Coupon applied to relevant items'
+    else
+      flash[:error] = 'Coupon could not be applied to any items'
+    end
 
     redirect_to "/cart"
   end
 
   def remove_coupon
+    cart.remove_coupon(params[:coupon_code])
+    flash[:notice] = 'Coupon removed from cart'
+    redirect_to "/cart"
+  end
+
+  def destroy
 
   end
 

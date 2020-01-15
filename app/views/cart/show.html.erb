@@ -14,18 +14,18 @@
         <td><%= cart.count_of(item.id) %></td>
         <td><%= number_to_currency(item.price / 100) %></td>
         <td><%= number_to_currency(cart.subtotal_of(item.id)) %></td>
-        <% if cart.coupons %>
+        <% if cart.item_has_relevant_coupon(item.merchant_id) %>
           <% cart.coupons.each do |coupon_code,coupon_details| %>
             <% if coupon_details['merchant_id'] == item.merchant_id && coupon_details['apply'] %>
               <td><%= coupon_code %></td>
               <td><%= coupon_details['discount'] %>%</td>
               <td><%= number_to_currency(cart.discounted_subtotal_of(item.id,coupon_details['discount'])) %></td>
-            <% else %>
-              <td>-</td>
-              <td>-</td>
-              <td>-</td>
             <% end %>
           <% end %>
+        <% else %>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
         <% end %>
         <td><div class="btn-toolbar">
           <%= button_to '+', "/cart/more/#{item.id}", class: "btn btn-success btn-sm mx-2", method: :patch unless cart.limit_reached?(item.id) %>
@@ -41,7 +41,7 @@
       <td></td>
       <td><%= number_to_currency(cart.grand_total) %></td>
       <td></td>
-      <td>[discount]</td>
+      <td></td>
       <td>[discounted subtotal]</td>
       <td colspan="2"></td>
     </tr>
@@ -62,7 +62,7 @@
   <% else %>
     <h4>My Coupons</h4>
     <table class="table">
-      <th>Id</th><th>Code</th><th>Name</th><th>Discount</th><th>Merchant</th><th></th><th></th>
+      <th>Id</th><th>Code</th><th>Name</th><th>Discount</th><th>Merchant</th><th></th><th></th><th></th>
         <% cart.coupons.each do |coupon_code,coupon_details| %>
           <tr>
             <td><%= coupon_details['id'] %></td>
@@ -70,8 +70,9 @@
             <td><%= coupon_details['name'] %></td>
             <td><%= coupon_details['discount'] %></td>
             <td><%= coupon_details['merchant_name'] %></td>
-            <td><%= button_to 'Apply', "/coupons/#{coupon_code}", class: "btn btn-success btn-sm", method: :patch %></td>
-            <td><%= button_to 'Remove', "/coupons/#{coupon_code}", class: "btn btn-danger btn-sm", method: :delete %></td>
+            <td><%= button_to 'Apply', "/coupons/#{coupon_code}/apply", class: "btn btn-success btn-sm", method: :patch %></td>
+            <td><%= button_to 'Remove', "/coupons/#{coupon_code}/remove", class: "btn btn-info btn-sm", method: :patch %></td>
+            <td><%= button_to 'Delete', "/coupons/#{coupon_code}", class: "btn btn-danger btn-sm", method: :delete %></td>
           </tr>
         <% end %>
     </table>

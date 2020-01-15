@@ -20,7 +20,9 @@ Rails.application.routes.draw do
   delete '/cart/:item_id', to: 'cart#remove_item'
 
   post '/coupons', to: 'coupons#add_coupon'
-  patch '/coupons/:coupon_code', to: 'coupons#apply_coupon'
+  patch '/coupons/:coupon_code/apply', to: 'coupons#apply_coupon'
+  patch '/coupons/:coupon_code/remove', to: 'coupons#remove_coupon'
+  delete '/coupons/:coupon_code', to: 'coupons#destroy'
 
   get '/registration', to: 'users#new', as: :registration
   resources :users, only: [:create, :update]

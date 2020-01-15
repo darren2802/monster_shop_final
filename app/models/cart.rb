@@ -25,18 +25,6 @@ class Cart
     end
   end
 
-  def grand_total
-    grand_total = 0.0
-    @contents['items'].each do |item_id, quantity|
-      grand_total += Item.find(item_id).price / 100 * quantity
-    end
-    grand_total
-  end
-
-  def count_of(item_id)
-    @contents['items'][item_id.to_s]
-  end
-
   def subtotal_of(item_id)
     @contents['items'][item_id.to_s] * Item.find(item_id).price / 100
   end
@@ -45,15 +33,36 @@ class Cart
     subtotal_of(item_id) * (100 - discount) / 100
   end
 
+  def grand_total
+    grand_total = 0.0
+    @contents['items'].each do |item_id, quantity|
+      grand_total += Item.find(item_id).price / 100 * quantity
+    end
+    grand_total
+  end
+
+  def discounted_grand_total
+    discounted_grand_total = 0.0
+    @contents['items'].each do |item_id, quantity|
+      discounted_grand_total += Item.find(item_id).price / 100 * quantity
+    end
+    discounted_grand_total
+  end
+
+  def count_of(item_id)
+    @contents['items'][item_id.to_s]
+  end
+
   def limit_reached?(item_id)
     count_of(item_id) == Item.find(item_id).inventory
   end
 
   def add_coupon(coupon_code)
     coupon_code.upcase!
-    @contents['coupons'] = Hash.new{ |h,k| h[k] = Hash.new} if !@contents['coupons']
+    @contents['coupons'] = Hash.new if !@contents['coupons']
     coupon = Coupon.where('coupons.code = ?', coupon_code)[0]
     merchant = Merchant.find(coupon.merchant_id)
+    @contents['coupons'][coupon_code] = Hash.new
     @contents['coupons'][coupon_code]['id'] = coupon.id
     @contents['coupons'][coupon_code]['name'] = coupon.name
     @contents['coupons'][coupon_code]['merchant_id'] = coupon.merchant_id
@@ -63,6 +72,9 @@ class Cart
   end
 
   def apply_coupon(coupon_code)
+    @contents['coupons'].each do |coupon_code,coupon_details|
+      return false if coupon_details['apply'] == true
+    end
     @contents['coupons'][coupon_code]['apply'] = true
 
     coupon_merchant_id = @contents['coupons'][coupon_code]['merchant_id']
@@ -70,6 +82,17 @@ class Cart
     items_merchant_ids = items_item_ids.map { |item_id| Item.find(item_id).merchant_id }
 
     items_merchant_ids.any? { |id| id == coupon_merchant_id }
+  end
+
+  def item_has_relevant_coupon(merchant_id)
+    @contents['coupons'].each do |coupon_code,coupon_details|
+      return true if merchant_id == coupon_details['merchant_id'] && coupon_details['apply'] == true
+    end
+    return false
+  end
+
+  def remove_coupon(coupon_code)
+    @contents['coupons'][coupon_code]['apply'] = false
   end
 
   def coupons
