@@ -1,3 +1,5 @@
+<h5>Order Summary</h5>
+<br>
 <table class="table">
   <th>Order Number</th>
   <th>Created</th>
@@ -14,13 +16,16 @@
   </tr>
   <tr><td colspan="6"> </td></tr>
   <tr>
-    <td colspan="3"></td><td>Coupon Code:</td><td>FS4FS</td><td></td>
+    <td colspan="3"></td><td>Coupon Code:</td><td><%= @order.coupon_code %></td><td></td>
   </tr>
   <tr>
-    <td colspan="3"></td><td>Discount</td><td>25%</td><td>-$556.43</td>
+    <td colspan="3"></td><td>Discount*</td><td><%= @order.discount_pct %>%</td><td>-<%= number_to_currency(@order.total_discount) %></td>
   </tr>
   <tr>
-    <td colspan="3"></td><td colspan="2"><b>Discounted Total</b></td><td><b><%= number_to_currency(@order.grand_total - 556.43) %></b></td>
+    <td colspan="3"></td><td colspan="2"><b>Discounted Total</b></td><td><b><%= number_to_currency(@order.discounted_grand_total) %></b></td>
+  </tr>
+  <tr>
+    <td colspan="3"></td><td colspan="3"><small>*Applied to qualifying items only</small></td>
   </tr>
 </table>
 <br>
@@ -41,15 +46,23 @@
       <td><%= order_item.item.description %></td>
       <td><%= order_item.quantity %></td>
       <td><%= number_to_currency(order_item.price / 100) %></td>
-      <td colspan="2"><%= number_to_currency(order_item.subtotal) %></td>
+      <td><%= number_to_currency(order_item.subtotal) %></td>
+      <% if order_item.coupon %>
+        <td><%= order_item.coupon.code %></td>
+        <td><%= order_item.coupon.discount %>%</td>
+      <% else %>
+        <td>-</td>
+        <td>-</td>
+      <% end %>
+      <td><%= number_to_currency(order_item.discounted_subtotal) %></td>
     </tr>
   <% end %>
   <tr>
     <td colspan="4"></td>
     <td><b><%= number_to_currency(@order.grand_total) %></b></td>
     <td></td>
-    <td><b><%= number_to_currency(556.43) %></b></td>
-    <td><b><%= number_to_currency(@order.grand_total - 556.43) %></b></td>
+    <td></td>
+    <td><b><%= number_to_currency(@order.discounted_grand_total) %></b></td>
   </tr>
 </table>
 <br>

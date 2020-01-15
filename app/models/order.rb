@@ -9,6 +9,23 @@ class Order < ApplicationRecord
     order_items.sum('price / 100 * quantity')
   end
 
+  def discounted_grand_total
+    grand_total - total_discount
+  end
+
+  def total_discount
+    order_items.joins(:coupon)
+                .sum('price / 100 * (coupons.discount) / 100')
+  end
+
+  def coupon_code
+    order_items.joins(:coupon).distinct(:code).pluck(:code)[0]
+  end
+
+  def discount_pct
+    order_items.joins(:coupon).maximum(:discount)
+  end
+
   def count_of_items
     order_items.sum(:quantity)
   end
